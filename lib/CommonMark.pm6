@@ -427,15 +427,55 @@ void cmark_iter_reset(cmark_iter *iter, cmark_node *current,
          cmark_event_type event_type);
 )
 
-#`(
-void cmark_node_unlink(cmark_node *node);
-int cmark_node_insert_before(cmark_node *node, cmark_node *sibling);
-int cmark_node_insert_after(cmark_node *node, cmark_node *sibling);
-int cmark_node_replace(cmark_node *oldnode, cmark_node *newnode);
-int cmark_node_prepend_child(cmark_node *node, cmark_node *child);
-int cmark_node_append_child(cmark_node *node, cmark_node *child);
-void cmark_consolidate_text_nodes(cmark_node *root);
-)
+class CMarkIter is repr('CPointer') {
+	sub cmark_iter_new()
+	    returns CMarkIter
+	    is native('cmark') { * }
+	sub cmark_iter_free( CMarkIter )
+	    is native('cmark') { * }
+	sub cmark_iter_next( CMarkIter )
+	    returns int16
+	    is native('cmark') { * }
+	sub cmark_iter_get_node( CMarkIter )
+	    returns CMarkNode
+	    is native('cmark') { * }
+	sub cmark_iter_get_event_type( CMarkIter )
+	    returns int16
+	    is native('cmark') { * }
+	sub cmark_iter_get_root( CMarkIter )
+	    returns CMarkNode
+	    is native('cmark') { * }
+	sub cmark_iter_reset( CMarkIter, CMarkNode, int16 )
+	    is native('cmark') { * }
+
+	method new {
+		cmark_iter_new();
+	}
+
+	method next {
+		cmark_iter_next( self );
+	}
+
+	method node {
+		cmark_iter_get_node( self );
+	}
+
+	method eventtype {
+		cmark_iter_get_event_type( self );
+	}
+
+	method root {
+		cmark_iter_get_root( self );
+	}
+
+	method reset( CMarkNode $current, int16 $event-type ) {
+		cmark_iter_reset( self, $current, $event-type );
+	}
+
+	submethod DESTROY {
+		cmark_iter_free( self )
+	}
+}
 
 class CMarkParser is repr('CPointer') {
 	sub cmark_parser_new()
