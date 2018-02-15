@@ -131,6 +131,14 @@ int cmark_node_append_child(cmark_node *node, cmark_node *child);
 void cmark_consolidate_text_nodes(cmark_node *root);
 )
 
+#`(
+char *cmark_render_xml(cmark_node *root, int options);
+char *cmark_render_html(cmark_node *root, int options);
+char *cmark_render_man(cmark_node *root, int options, int width);
+char *cmark_render_commonmark(cmark_node *root, int options, int width);
+char *cmark_render_latex(cmark_node *root, int options, int width);
+)
+
 # type is an enum in the interface.
 class CMarkNode is repr('CPointer') {
 	sub cmark_node_new( int16 )
@@ -260,6 +268,22 @@ class CMarkNode is repr('CPointer') {
 	    returns int16
 	    is native('cmark') { * }
 	sub cmark_consolidate_text_nodes( CMarkNode )
+	    is native('cmark') { * }
+
+	sub cmark_render_xml( CMarkNode, int16 )
+	    returns Str
+	    is native('cmark') { * }
+	sub cmark_render_html( CMarkNode, int16 )
+	    returns Str
+	    is native('cmark') { * }
+	sub cmark_render_man( CMarkNode, int16, int16 )
+	    returns Str
+	    is native('cmark') { * }
+	sub cmark_render_commonmark( CMarkNode, int16, int16 )
+	    returns Str
+	    is native('cmark') { * }
+	sub cmark_render_latex( CMarkNode, int16, int16 )
+	    returns Str
 	    is native('cmark') { * }
 
 	method new( :$type ) {
@@ -411,6 +435,22 @@ class CMarkNode is repr('CPointer') {
 		cmark_consolidate_text_nodes( self );
 	}
 
+	method render-xml( int16 $options ) {
+		cmark_render_xml( self, $options );
+	}
+	method render-html( int16 $options ) {
+		cmark_render_html( self, $options );
+	}
+	method render-man( int16 $options, int16 $width ) {
+		cmark_render_man( self, $options, $width );
+	}
+	method render-commonmark( int16 $options, int16 $width ) {
+		cmark_render_commonmark( self, $options, $width );
+	}
+	method render-latex( int16 $options, int16 $width ) {
+		cmark_render_latex( self, $options, $width );
+	}
+
 	submethod DESTROY {
 		cmark_node_free( self );
 	}
@@ -477,6 +517,16 @@ class CMarkIter is repr('CPointer') {
 	}
 }
 
+#`(
+cmark_parser *cmark_parser_new(int options);
+cmark_parser *cmark_parser_new_with_mem(int options, cmark_mem *mem);
+void cmark_parser_free(cmark_parser *parser);
+void cmark_parser_feed(cmark_parser *parser, const char *buffer, size_t len);
+cmark_node *cmark_parser_finish(cmark_parser *parser);
+cmark_node *cmark_parse_document(const char *buffer, size_t len, int options);
+cmark_node *cmark_parse_file(FILE *f, int options);
+)
+
 class CMarkParser is repr('CPointer') {
 	sub cmark_parser_new()
 	    returns CMarkParser
@@ -504,24 +554,6 @@ class CMarkParser is repr('CPointer') {
 		cmark_parser_free( self );
 	}
 }
-
-#`(
-cmark_parser *cmark_parser_new(int options);
-cmark_parser *cmark_parser_new_with_mem(int options, cmark_mem *mem);
-void cmark_parser_free(cmark_parser *parser);
-void cmark_parser_feed(cmark_parser *parser, const char *buffer, size_t len);
-cmark_node *cmark_parser_finish(cmark_parser *parser);
-cmark_node *cmark_parse_document(const char *buffer, size_t len, int options);
-cmark_node *cmark_parse_file(FILE *f, int options);
-)
-
-#`(
-char *cmark_render_xml(cmark_node *root, int options);
-char *cmark_render_html(cmark_node *root, int options);
-char *cmark_render_man(cmark_node *root, int options, int width);
-char *cmark_render_commonmark(cmark_node *root, int options, int width);
-char *cmark_render_latex(cmark_node *root, int options, int width);
-)
 
 method to-html( Str $text, int16 $options = CMARK_OPT_DEFAULT ) {
 	my $bytes = $text.encode('UTF-8').bytes;
