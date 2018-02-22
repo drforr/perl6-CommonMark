@@ -2,7 +2,7 @@ use v6;
 use CommonMark;
 use Test;
 
-plan 5;
+plan 6;
 
 is CommonMark.to-html("Hello world!"),
    "<p>Hello world!</p>\n",
@@ -19,6 +19,9 @@ is $cmn.type-string, 'custom_block', 'CommonMark node has correct type name';
 
 my $cmi = CommonMark::Iterator.new;
 isa-ok( $cmi, 'CommonMark::Iterator' );
+
+my $cmp = CommonMark::Parser.new;
+isa-ok( $cmp, 'CommonMark::Parser' );
 
 done-testing;
 

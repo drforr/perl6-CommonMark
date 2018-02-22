@@ -67,6 +67,10 @@ Return this node's predecessor in the multiply-linked list
 
 Return this node's first child within the multiply-linked list
 
+=head1 CommonMark::Iterator class
+
+=head1 CommonMark::Parser class
+
 =end pod
 
 ### 	sub cmark-lib {
@@ -81,46 +85,6 @@ Return this node's first child within the multiply-linked list
 ### 			}
 ### 		}
 ### 	}
-
-### #`(
-### cmark_parser *cmark_parser_new(int options);
-### cmark_parser *cmark_parser_new_with_mem(int options, cmark_mem *mem);
-### void cmark_parser_free(cmark_parser *parser);
-### void cmark_parser_feed(cmark_parser *parser, const char *buffer, size_t len);
-### cmark_node *cmark_parser_finish(cmark_parser *parser);
-### cmark_node *cmark_parse_document(const char *buffer, size_t len, int options);
-### cmark_node *cmark_parse_file(FILE *f, int options);
-### )
-### 
-### #`(
-### class CMarkParser is repr('CPointer') {
-### 	sub cmark_parser_new()
-### 	    returns CMarkParser
-### 	    is native(&cmark-lib) { * }
-### 	sub cmark_parser_free( CMarkParser )
-### 	    is native(&cmark-lib) { * }
-### 	sub cmark_parser_finish( CMarkParser )
-### 	    returns CommonMark::Node
-### 	    is native(&cmark-lib) { * }
-### 	sub cmark_parser_feed( CMarkParser, Str, size_t )
-### 	    is native(&cmark-lib) { * }
-### 
-### 	method new {
-### 		cmark_parser_new();
-### 	}
-### 	method feed( Str $buffer ) {
-### 		my $bytes = $buffer.encode('UTF-8').bytes;
-### 		cmark_parser_feed( self, $buffer, $bytes );
-### 	}
-### 	method close {
-### 		cmark_parser_free( self );
-### 	}
-### 
-### 	submethod DESTROY {
-### 		cmark_parser_free( self );
-### 	}
-### }
-### )
 
 use NativeCall;
 
@@ -606,6 +570,43 @@ sub cmark_iter_reset( CommonMark::Iterator, CommonMark::Node, int32 )
  
  	submethod DESTROY {
  		cmark_iter_free( self )
+ 	}
+}
+
+class CommonMark::Parser is repr('CPointer') {
+#`(
+cmark_parser *cmark_parser_new(int options);
+cmark_parser *cmark_parser_new_with_mem(int options, cmark_mem *mem);
+void cmark_parser_free(cmark_parser *parser);
+void cmark_parser_feed(cmark_parser *parser, const char *buffer, size_t len);
+cmark_node *cmark_parser_finish(cmark_parser *parser);
+cmark_node *cmark_parse_document(const char *buffer, size_t len, int options);
+cmark_node *cmark_parse_file(FILE *f, int options);
+)
+sub cmark_parser_new()
+    returns CommonMark::Parser
+    is native('cmark') { * }
+sub cmark_parser_free( CommonMark::Parser )
+    is native('cmark') { * }
+sub cmark_parser_finish( CommonMark::Parser )
+    returns CommonMark::Node
+    is native('cmark') { * }
+sub cmark_parser_feed( CommonMark::Parser, Str, size_t )
+    is native('cmark') { * }
+
+ 	method new {
+ 		cmark_parser_new();
+ 	}
+ 	method feed( Str $buffer ) {
+ 		my $bytes = $buffer.encode('UTF-8').bytes;
+ 		cmark_parser_feed( self, $buffer, $bytes );
+ 	}
+ 	method close {
+ 		cmark_parser_free( self );
+ 	}
+ 
+ 	submethod DESTROY {
+ 		cmark_parser_free( self );
  	}
 }
 
