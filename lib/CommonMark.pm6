@@ -267,29 +267,25 @@ sub cmark_node_set_fence_info( CommonMark::Node, Str is encoded('utf8') ) # enum
     returns int32
     is native('cmark') { * }
 sub cmark_node_get_url( CommonMark::Node )
-    returns Str
-    is encoded('utf8')
+    returns Str is encoded('utf8')
     is native('cmark') { * }
 sub cmark_node_set_url( CommonMark::Node, Str is encoded('utf8') )
     returns int32
     is native('cmark') { * }
 sub cmark_node_get_title( CommonMark::Node )
-    returns Str
-    is encoded('utf8')
+    returns Str is encoded('utf8')
     is native('cmark') { * }
 sub cmark_node_set_title( CommonMark::Node, Str is encoded('utf8') )
     returns int32
     is native('cmark') { * }
 sub cmark_node_get_on_enter( CommonMark::Node )
-    returns Str
-    is encoded('utf8')
+    returns Str is encoded('utf8')
     is native('cmark') { * }
 sub cmark_node_set_on_enter( CommonMark::Node, Str is encoded('utf8') )
     returns int32
     is native('cmark') { * }
 sub cmark_node_get_on_exit( CommonMark::Node )
-    returns Str
-    is encoded('utf8')
+    returns Str is encoded('utf8')
     is native('cmark') { * }
 sub cmark_node_set_on_exit( CommonMark::Node, Str is encoded('utf8') )
     returns int32
@@ -591,7 +587,7 @@ sub cmark_parser_free( CommonMark::Parser )
 sub cmark_parser_finish( CommonMark::Parser )
     returns CommonMark::Node
     is native('cmark') { * }
-sub cmark_parser_feed( CommonMark::Parser, Str, size_t )
+sub cmark_parser_feed( CommonMark::Parser, Str is encoded('utf8'), size_t )
     is native('cmark') { * }
 
  	method new {
