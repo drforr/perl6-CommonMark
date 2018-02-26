@@ -2,17 +2,19 @@
 CommonMark
 =======
 
-Parser and basic AST for CommonMark spec.
+Binding to the C CommonMark library.
 
 If you're concerned about compatibility, it's Markdown but with an actual spec. The Markdown "spec" file leaves many edge cases open to interpretation.
 
 Installation
 ============
 
+Make certain you have libcmark, as this binds to the C library.
+
 * Using zef (a module management tool bundled with Rakudo Star):
 
 ```
-    zef update && zef install CommonMar
+    zef update && zef install CommonMark
 ```
 
 ## Testing

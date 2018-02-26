@@ -63,13 +63,221 @@ Return this node's successor in the multiply-linked list
 
 Return this node's predecessor in the multiply-linked list
 
+=item parent()
+
+Return this node's parent in the multiply-linked list
+
 =item first-child()
 
 Return this node's first child within the multiply-linked list
 
+=item last-child()
+
+Return this node's last child within the multiply-linked list
+
+=item user-data()
+
+Return this node's user data (generic pointer)
+
+=item user-data( Pointer $ptr )
+
+Set user data pointer
+
+=item type()
+
+Return this node's type number
+
+=item type-string()
+
+Return this node's type as a string
+
+=item literal()
+
+Return this node's literal string
+
+=item literal( Str $str )
+
+Set this node's literal string
+
+=item heading-level()
+
+Return this node's heading level
+
+=item heading-level( int32 $level )
+
+Set this node's heading level
+
+=item list-type()
+
+Return this node's list type
+
+=item list-type( int32 $level )
+
+Set this node's list type
+
+=item list-delim()
+
+Return this node's list delimiter
+
+=item list-delim( int32 $level )
+
+Set this node's list delimiter
+
+=item list-start()
+
+Return this node's list start
+
+=item list-start( int32 $level )
+
+Set this node's list start
+
+=item list-tight()
+
+Return this node's list tightness
+
+=item list-tight( int32 $level )
+
+Set this node's list tightness
+
+=item fence-info()
+
+Return this node's fence information
+
+=item fence-info( Str $info )
+
+Set this node's fence information
+
+=item url()
+
+Return this node's URL content
+
+=item url( Str $url )
+
+Set this node's URL content
+
+=item title()
+
+Return this node's title
+
+=item title( Str $title )
+
+Set this node's title
+
+=item on-enter()
+
+Return this node's on-enter string
+
+=item on-enter( Str $title )
+
+Set this node's on-enter string
+
+=item on-exit()
+
+Return this node's on-exit string
+
+=item on-exit( Str $title )
+
+Set this node's on-exit string
+
+=item start-line()
+
+Return this node's starting line
+
+=item start-column()
+
+Return this node's starting column
+
+=item end-line()
+
+Return this node's end line
+
+=item end-column()
+
+Return this node's end column
+
+=item unlink()
+
+Unlink this node from the tree.
+
+=item insert-before( CommonMark::Node $node )
+
+Insert C<$node> before this node
+
+=item insert-after( CommonMark::Node $node )
+
+Insert C<$node> after this node
+
+=item replace( CommonMark::Node $node )
+
+Replace this node with C<$node>
+
+=item prepend-child( CommonMark::Node $node )
+
+Prepend C<$node> below this node
+
+=item append-child( CommonMark::Node $node )
+
+Append C<$node> below this node
+
+=item consolidate-text-nodes()
+
+Consolidate the text nodes in this node
+
+=item render-xml( int32 $options )
+
+Render this node as XML, with the appropriate options C<$options>
+
+=item render-html( int32 $options )
+
+Render this node as HTML, with the appropriate options C<$options>
+
+=item render-man( int32 $options, int32 $width )
+
+Render this node as a manpage, with the appropriate options C<$options>, C<$width>
+
+=item render-commonmark( int32 $options, int32 $width )
+
+Render this node as the original CommonMark text, with the appropriate options C<$options> and C<$idth>
+
+=item render-latex( int32 $options, int32 $width )
+
+Render this node as LaTeX, with the appropriate options C<$options>, C<$width>
+
+=item check( int32 $file-ID )
+
+Check this node with file descriptor $file-ID
+
 =head1 CommonMark::Iterator class
 
+=item next()
+
+Return the next item in this iterator
+
+=item node()
+
+Return the current node for the iterator
+
+=item event-type()
+
+Return the current event type
+
+=item root()
+
+Return the root for the iterator
+
+=item reset( CommonMark::Node $current, int32 $event-type )
+
+Reset the iterator to node C<$current>, type C<$event-type>
+
 =head1 CommonMark::Parser class
+
+=item feed( Str $buffer )
+
+Feed the buffer to the parser
+
+=item finish()
+
+Finish parsing the document
 
 =end pod
 
@@ -202,6 +410,7 @@ sub cmark_node_last_child( CommonMark::Node )
 ### const char *cmark_node_get_type_string(cmark_node *node);
 ### const char *cmark_node_get_literal(cmark_node *node);
 ### int cmark_node_set_literal(cmark_node *node, const char *content);
+### int cmark_node_get_heading_level(cmark_node *node);
 ### int cmark_node_set_heading_level(cmark_node *node, int level);
 ### cmark_list_type cmark_node_get_list_type(cmark_node *node);
 ### int cmark_node_set_list_type(cmark_node *node, cmark_list_type type);
@@ -243,6 +452,9 @@ sub cmark_node_get_literal( CommonMark::Node )
     returns Str is encoded('utf8')
     is native('cmark') { * }
 sub cmark_node_set_literal( CommonMark::Node, Str is encoded('utf8') )
+    returns int32
+    is native('cmark') { * }
+sub cmark_node_get_heading_level( CommonMark::Node )
     returns int32
     is native('cmark') { * }
 sub cmark_node_set_heading_level( CommonMark::Node, int32 )
@@ -334,8 +546,10 @@ sub cmark_node_get_end_column( CommonMark::Node )
  		return cmark_node_set_literal( self, $str );
  	}
  
-	# XXX missing the getter?
- 	method heading-level( int32 $level ) {
+ 	multi method heading-level {
+ 		return cmark_node_get_heading_level( self );
+ 	}
+ 	multi method heading-level( int32 $level ) {
  		return cmark_node_set_heading_level( self, $level );
  	}
  
