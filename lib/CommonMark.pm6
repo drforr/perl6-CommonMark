@@ -49,6 +49,10 @@ From the documetation:
 
 Returns the library version in text form.
 
+=item parse-document( Str $buffer, int32 $options )
+
+Returns a CommonMark::Node root of the document.
+
 =head1 CommonMark::Node class
 
 =item new( :$type )
@@ -296,52 +300,6 @@ sub cmark-lib {
 }
 
 use NativeCall;
-
-class CommonMark {
-
-#`( The original C library calls.
-char *cmark_markdown_to_html(const char *text, size_t len, int options);
-int32 cmark_version(void);
-const char *cmark_version_string(void);
-)
-
-sub cmark_markdown_to_html(
-	Str $text is encoded('utf8'),
-	size_t $len,
-	int32 $options )
-    returns Str is encoded('utf8')
-    is native('cmark') { * }
-
-sub cmark_version()
-    returns int32
-    is native('cmark') { * }
-
-sub cmark_version_string()
-    returns Str is encoded('utf8')
-    is native('cmark') { * }
-
- 	constant CMARK_OPT_DEFAULT = 0;
- 	constant CMARK_OPT_SOURCEPOS = 1 +< 1;
- 	constant CMARK_OPT_HARDBREAKS = 1 +< 2;
- 	constant CMARK_OPT_SAFE = 1 +< 3;
- 	constant CMARK_OPT_NOBREAKS = 1 +< 4;
- 	constant CMARK_OPT_NORMALIZE = 1 +< 8; # Legacy
- 	constant CMARK_OPT_VALIDATE_UTF8 = 1 +< 9;
- 	constant CMARK_OPT_SMART = 1 +< 10;
-
-	method to-html( Str $text, int32 $options = CMARK_OPT_DEFAULT ) {
-		my $bytes = $text.encode('UTF-8').bytes;
-		return cmark_markdown_to_html($text, $bytes, $options);
-	}
-
-	method version() returns int32 {
-		return cmark_version();
-	}
-
-	method version-string() {
-		return cmark_version_string();
-	}
-}
 
 class CommonMark::Node is repr('CPointer') {
 #`(
@@ -737,6 +695,64 @@ sub cmark_node_check( CommonMark::Node, int32 ) # FILE pointer
  	}
 }
 
+class CommonMark {
+
+#`( The original C library calls.
+char *cmark_markdown_to_html(const char *text, size_t len, int options);
+int32 cmark_version(void);
+const char *cmark_version_string(void);
+
+cmark_node *cmark_parse_document(const char *buffer, size_t len, int options);
+#cmark_node *cmark_parse_file(FILE *f, int options);
+)
+
+sub cmark_markdown_to_html(
+	Str $text is encoded('utf8'),
+	size_t $len,
+	int32 $options )
+    returns Str is encoded('utf8')
+    is native('cmark') { * }
+
+sub cmark_version()
+    returns int32
+    is native('cmark') { * }
+
+sub cmark_version_string()
+    returns Str is encoded('utf8')
+    is native('cmark') { * }
+
+sub cmark_parse_document( Str is encoded('utf8'), size_t, int32 )
+    returns CommonMark::Node
+    is native('cmark') { * }
+
+ 	constant CMARK_OPT_DEFAULT = 0;
+ 	constant CMARK_OPT_SOURCEPOS = 1 +< 1;
+ 	constant CMARK_OPT_HARDBREAKS = 1 +< 2;
+ 	constant CMARK_OPT_SAFE = 1 +< 3;
+ 	constant CMARK_OPT_NOBREAKS = 1 +< 4;
+ 	constant CMARK_OPT_NORMALIZE = 1 +< 8; # Legacy
+ 	constant CMARK_OPT_VALIDATE_UTF8 = 1 +< 9;
+ 	constant CMARK_OPT_SMART = 1 +< 10;
+
+	method to-html( Str $text, int32 $options = CMARK_OPT_DEFAULT ) {
+		my $bytes = $text.encode('UTF-8').bytes;
+		return cmark_markdown_to_html($text, $bytes, $options);
+	}
+
+	method version() returns int32 {
+		return cmark_version();
+	}
+
+	method version-string() {
+		return cmark_version_string();
+	}
+
+	method parse-document( Str $buffer, int32 $options ) {
+		my $bytes = $buffer.encode('UTF-8').bytes;
+		return cmark_parse_document( $buffer, $bytes, $options );
+	}
+}
+
 class CommonMark::Iterator is repr('CPointer') {
 #`(
 cmark_iter *cmark_iter_new(cmark_node *root);
@@ -804,8 +820,8 @@ cmark_parser *cmark_parser_new_with_mem(int options, cmark_mem *mem);
 void cmark_parser_free(cmark_parser *parser);
 void cmark_parser_feed(cmark_parser *parser, const char *buffer, size_t len);
 cmark_node *cmark_parser_finish(cmark_parser *parser);
-cmark_node *cmark_parse_document(const char *buffer, size_t len, int options);
-cmark_node *cmark_parse_file(FILE *f, int options);
+#cmark_node *cmark_parse_document(const char *buffer, size_t len, int options);
+#cmark_node *cmark_parse_file(FILE *f, int options);
 )
 sub cmark_parser_new( int32 )
     returns CommonMark::Parser
