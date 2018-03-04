@@ -695,7 +695,7 @@ sub cmark_node_check( CommonMark::Node, int32 ) # FILE pointer
  	}
 }
 
-class CommonMark {
+class CommonMark:ver<0.0.5> {
 
 #`( The original C library calls.
 char *cmark_markdown_to_html(const char *text, size_t len, int options);
