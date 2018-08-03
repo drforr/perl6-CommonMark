@@ -3,7 +3,13 @@
 CommonMark
 ==========
 
-Interface to the [libcmark](libcmark) CommonMark parser
+Interface to the [libcmark](https://github.com/commonmark/cmark) CommonMark parser.
+
+
+Native library notes
+--------------------
+
+This module uses native library, so in order to use it, you need either build the library or install it using pre-built package. For GNU/Linux distributions the most natural way to do so it so search for `libcmark` package in appropriate distribution repository and install if the package is already there.
 
 Synopsis
 ========
